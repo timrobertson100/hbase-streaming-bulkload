@@ -1,6 +1,6 @@
 ### Example of bulk loading HBase from a Spark stream
 
-This code demonstrates streaming bulk load into `1.2.x` using Spark `1.6.x`.
+This code demonstrates streaming bulk load into HBase `1.2.x` using Spark `1.6.x`.
 A Netcat process is used to simulate a stream of data.
 
 To run this example:
