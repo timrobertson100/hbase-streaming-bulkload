@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.opencore.sample</groupId>
+  <artifactId>hbase-streaming-bulkload</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <properties>
+    <!-- Note: versions selected to match the target environment -->
+    <scala.tools.version>2.10</scala.tools.version>
+    <scala.version>2.10.4</scala.version>
+    <hadoop.version>2.6.0-cdh5.8.4</hadoop.version>
+    <hbase.version>1.2.0-cdh5.8.4</hbase.version>
+    <spark.version>1.6.0-cdh5.8.4</spark.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>cloudera</id>
+      <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <!-- see http://davidb.github.com/scala-maven-plugin -->
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <version>3.2.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+            <configuration>
+              <args>
+                <arg>-dependencyfile</arg>
+                <arg>${project.build.directory}/.scala_dependencies</arg>
+              </args>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.4.3</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_${scala.tools.version}</artifactId>
+      <version>${spark.version}</version>
+
+      <!--
+        To allow running locally on a Mac remove Snappy
+        http://stackoverflow.com/questions/30039976/unsatisfiedlinkerror-no-snappyjava-in-java-library-path-when-running-spark-mlli
+      -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.xerial.snappy</groupId>
+          <artifactId>snappy-java</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xerial.snappy</groupId>
+      <artifactId>snappy-java</artifactId>
+      <version>1.0.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming_${scala.tools.version}</artifactId>
+      <version>${spark.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!--dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-sql_${scala.tools.version}</artifactId>
+      <version>${spark.version}</version>
+      <scope>provided</scope>
+    </dependency-->
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-spark</artifactId>
+      <version>${hbase.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+
+  <profiles>
+    <!--
+      Provides all the necessary scala jars to run Spark in the IDE, which are normally marked as provided scope.
+    -->
+    <profile>
+      <id>ide</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.scala-lang</groupId>
+          <artifactId>scala-library</artifactId>
+          <version>${scala.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-core_${scala.tools.version}</artifactId>
+          <version>${spark.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>org.xerial.snappy</groupId>
+              <artifactId>snappy-java</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
+        <!--dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-sql_${scala.tools.version}</artifactId>
+          <version>${spark.version}</version>
+        </dependency-->
+        <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-streaming_${scala.tools.version}</artifactId>
+          <version>${spark.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.hbase</groupId>
+          <artifactId>hbase-spark</artifactId>
+          <version>${hbase.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+</project>
