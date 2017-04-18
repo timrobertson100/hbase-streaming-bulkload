@@ -4,14 +4,12 @@ import kafka.serializer.StringDecoder
 import org.apache.hadoop.hbase.client.Put
 import org.apache.hadoop.hbase.spark.HBaseContext
 import org.apache.hadoop.hbase.{HBaseConfiguration, TableName}
-import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.JavaConverters._
-import scala.collection.mutable.{Map => MMap}
 
 /**
   * A version of the Bulkload demonstrating that the DStream can use the HBaseRow container Java object reading from
@@ -26,7 +24,6 @@ object BulkLoad4 {
     val sc = new SparkContext(conf)
     try {
 
-      // For the simplest example we connect to a socket on port 7001 and then micro batch content at 10 second intervals
       val ssc = new StreamingContext(sc, Seconds(10))
 
       val kafkaParams = Map[String, String](
@@ -72,7 +69,7 @@ object BulkLoad4 {
       )
 
       ssc.start()
-      ssc.awaitTerminationOrTimeout(600000) // run the demo for 10 minute
+      ssc.awaitTerminationOrTimeout(600000) // run the demo for 10 minutes
 
     } finally {
       sc.stop()
